@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Urlopy i nieobecności</title>
+<style>
+:root{--bg:#fafaf8;--fg:#1c1c1a;--mu:#8a8a85;--ln:#e6e5e0;--we:#f0efea;--ho:#ecdcdc;--card:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#171716;--fg:#ecece8;--mu:#8d8d88;--ln:#2e2e2b;--we:#222220;--ho:#3a2a2a;--card:#1e1e1c}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 -apple-system,"Inter","Segoe UI",sans-serif}
+#lock{max-width:320px;margin:30vh auto;text-align:center;padding:0 20px}
+#lock input{width:100%;padding:12px;border:1px solid var(--ln);border-radius:10px;background:var(--card);color:var(--fg);font-size:16px;margin:14px 0 8px}
+button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--ln);border-radius:999px;padding:7px 13px;cursor:pointer}
+button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+#app{display:none;max-width:1200px;margin:0 auto;padding:16px 14px 60px}
+h1{font-size:20px;font-weight:600;margin:0 0 2px}.mu{color:var(--mu);font-size:12px}
+#bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--ln);margin-bottom:14px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.m{margin-bottom:26px}.m h2{font-size:15px;font-weight:600;margin:0 0 8px;text-transform:capitalize}
+.sc{overflow-x:auto;border:1px solid var(--ln);border-radius:12px;background:var(--card)}
+table{border-collapse:separate;border-spacing:0;font-size:11px;width:100%}
+th,td{border-right:1px solid var(--ln);border-bottom:1px solid var(--ln);min-width:30px;height:32px;text-align:center;padding:0}
+th{font-weight:500;color:var(--mu);height:40px;line-height:1.2}
+th:first-child,td:first-child{position:sticky;left:0;background:var(--card);z-index:2;min-width:84px;text-align:left;padding-left:10px;font-size:12px;font-weight:500}
+tr:last-child td{border-bottom:0}
+.we{background:var(--we)}.ho{background:var(--ho)}.td{box-shadow:inset 0 0 0 2px var(--fg)}
+td.c{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bd{display:block;font-size:10px;font-weight:600}.warn{color:#d4604f}
+.sum{width:100%;margin-top:6px}.sum th,.sum td{min-width:0;height:34px;font-size:12px}.sum th:first-child,.sum td:first-child{position:static}
+input.lim{width:44px;border:1px solid var(--ln);border-radius:6px;background:var(--card);color:var(--fg);text-align:center;padding:3px}
+.pill{width:22px;height:22px;border-radius:6px;margin:auto}
+</style></head><body>
+<div id="lock"><h1>Plan nieobecności</h1><div class="mu">Wpisz hasło</div>
+<input id="pw" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="hasło" style="color:#111;background:#fff;caret-color:#111" oninput=""><button id="go">Wejdź</button><div id="err" class="mu"></div><div id="cnt" style="font-size:22px;letter-spacing:4px;min-height:30px;margin-top:10px"></div><div id="kb" style="margin-top:10px"></div></div>
+<div id="app">
+<img src="logo.png" alt="Noizz" style="height:30px;display:block;margin-bottom:10px" onerror="this.style.display='none'"><h1>Urlopy i nieobecności <span class="mu" style="font-weight:400">v7</span></h1><div class="mu" id="st"></div>
+<div id="who" style="margin:12px 0 0"></div><div id="bar"></div><div id="ms"></div>
+<button id="more">+ Dodaj miesiąc</button>
+<h2 style="font-size:15px;margin:28px 0 0">Podsumowanie</h2><div class="mu">Limit: 26 dni urlopu w roku (1 stycznia–31 grudnia). W 2026 wpisz w polu „Pula” raz, ile dni zostało ci na dziś. „Zostało” zmniejsza się samo przy każdym zaznaczonym dniu. Limit na kolejne lata liczy się sam: 26 plus dni niewykorzystane w poprzednim roku. Do limitu liczą się urlop i urlop na żądanie. Pole „Limit” w 2026 każdy ustawia sam, zmiana zapisuje się od razu.</div><div id="sumw"></div><div id="hist"></div>
+<p class="mu">Wybierz rodzaj nieobecności u góry i stukaj w dni. „Usuń” czyści dzień. Weekendy i święta są wolne i nie liczą się do limitu. Liczba nad dniem to osoby nieobecne tego dnia.</p>
+</div>
+<script>
+// WKLEJ TUTAJ swoją konfigurację z Firebase (obiekt firebaseConfig):
+const FIREBASE_CONFIG={apiKey:"AIzaSyAxSRjKv2vGZWjlMhaNemHbTmatzIT7nF8",authDomain:"pati-16e94.firebaseapp.com",projectId:"pati-16e94",storageBucket:"pati-16e94.firebasestorage.app",messagingSenderId:"464425678022",appId:"1:464425678022:web:cad7219ac0d689a183d3c7"};
+const HASH="b5f590859128dc4c179129f0daeab8e73ad2204ab93225c9f3ee7a9a717132b0";
+const P=["Patrycja","Ola","Ala","Daria","Michał"];
+const T={u:["Urlop","#7fb88f"],z:["Na żądanie","#e3a857"],l:["L4","#d97a7a"],h:["Home office","#7aa7d9"],d:["Delegacja","#a98bd1"],w:["Wydarzenie","#d9a0c0"]};
+const START=new Date(2026,10,1);let S={a:{},n:8,lim:{},by:{},log:[]},ME=(()=>{try{return localStorage.getItem("urlopyUser")||""}catch(e){return""}})(),brush="u",doc=null,mode="local";
+const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,"0"),key=(y,m,d)=>`${y}-${pad(m+1)}-${pad(d)}`;
+async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function tryPw(v){if(await sha(v)===HASH){try{sessionStorage.pwok=1}catch(e){}$("#lock").style.display="none";$("#app").style.display="block";boot()}else $("#err").textContent="Niepoprawne hasło"}
+$("#go").onclick=()=>tryPw(buf||$("#pw").value);$("#pw").onkeydown=e=>e.key=="Enter"&&tryPw(e.target.value);
+let buf="",shf=false,FE="";
+function kb(){const R=["1234567890","qwertyuiop","asdfghjkl","^zxcvbnm<"];$("#kb").innerHTML=R.map(r=>`<div style="display:flex;gap:4px;justify-content:center;margin-bottom:4px">${[...r].map(c=>{const l=c=="^"?"⇧":c=="<"?"⌫":shf?c.toUpperCase():c;return `<button type="button" data-q="${c}" style="flex:1;max-width:34px;height:42px;padding:0;border-radius:8px${c=="^"&&shf?";background:var(--fg);color:var(--bg)":""}">${l}</button>`}).join("")}</div>`).join("");$("#cnt").textContent="\u2022".repeat(buf.length)}
+$("#kb").onclick=e=>{const b=e.target.closest("[data-q]");if(!b)return;const c=b.dataset.q;if(c=="^")shf=!shf;else if(c=="<")buf=buf.slice(0,-1);else{buf+=shf?c.toUpperCase():c;shf=false}kb()};
+kb();
+function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=(h+l-7*m+114)%31+1;return new Date(y,mo-1,da)}
+const HC={};function hol(y){if(HC[y])return HC[y];const s=new Set();[[0,1],[0,6],[4,1],[4,3],[7,15],[10,1],[10,11],[11,24],[11,25],[11,26]].forEach(([m,d])=>s.add(key(y,m,d)));const e=easter(y);[0,1,49,60].forEach(o=>{const x=new Date(e);x.setDate(x.getDate()+o);s.add(key(x.getFullYear(),x.getMonth(),x.getDate()))});return HC[y]=s}
+const off=(y,m,d)=>{const w=new Date(y,m,d).getDay();return w==0||w==6||hol(y).has(key(y,m,d))};
+function render(){
+$("#who").innerHTML=`<span class="mu">Jesteś:</span> `+P.map(p=>`<button data-u="${p}" class="${ME==p?"on":""}" style="margin:0 4px 4px 0">${p}</button>`).join("")+`<button data-sv style="margin-left:8px;border-color:#7fb88f">Zapisz</button>`+(ME?"":`<div class="warn" style="font-size:12px">Wybierz, kim jesteś, żeby wpisywać nieobecności.</div>`);
+$("#bar").innerHTML=Object.entries(T).map(([k,[n,c]])=>`<button data-b="${k}" class="${brush==k?"on":""}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")+`<button data-b="x" class="${brush=="x"?"on":""}">Usuń</button>`;
+let h="";const today=new Date();
+for(let i=0;i<S.n;i++){const dt=new Date(START.getFullYear(),START.getMonth()+i,1),y=dt.getFullYear(),m=dt.getMonth(),dim=new Date(y,m+1,0).getDate();
+const dn=["Nd","Pn","Wt","Śr","Cz","Pt","So"];let th="<th></th>",cnt="";
+for(let d=1;d<=dim;d++){const k=key(y,m,d);const n=P.filter(p=>S.a[p]&&S.a[p][k]&&!off(y,m,d)).length;const isT=today.getFullYear()==y&&today.getMonth()==m&&today.getDate()==d;
+th+=`<th class="${off(y,m,d)?(hol(y).has(k)&&![0,6].includes(new Date(y,m,d).getDay())?"ho":"we"):""}">${dn[new Date(y,m,d).getDay()]}<br>${d}<span class="bd ${n>=2?"warn":""}">${n?n:"&nbsp;"}</span></th>`}
+let rows="";for(const p of P){rows+=`<tr><td>${p}${p==ME?" •":""}</td>`;for(let d=1;d<=dim;d++){const k=key(y,m,d),o=off(y,m,d),t=(S.a[p]||{})[k],isT=today.getFullYear()==y&&today.getMonth()==m&&today.getDate()==d;
+rows+=o?`<td class="${hol(y).has(k)&&![0,6].includes(new Date(y,m,d).getDay())?"ho":"we"}"></td>`:`<td class="c ${isT?"td":""}" data-p="${p}" data-k="${k}" style="${t?`background:${T[t][1]}`:""}" title="${t?T[t][0]+(((S.by||{})[p]||{})[k]?" – "+S.by[p][k]:""):""}">${t?`<span style="font-weight:600">${t.toUpperCase()}</span>`:""}</td>`}rows+="</tr>"}
+h+=`<div class="m"><h2>${dt.toLocaleDateString("pl-PL",{month:"long",year:"numeric"})}</h2><div class="sc"><table><tr>${th}</tr>${rows}</table></div></div>`}
+$("#ms").innerHTML=h;
+const ys=[...new Set(Array.from({length:S.n},(_,i)=>new Date(2026,10+i,1).getFullYear()))];let out="";const CF={};
+for(const y of ys){let sh=`<h2 style="font-size:14px;margin:14px 0 6px">${y}</h2><div class="sc"><table class="sum"><tr><th style="text-align:left;padding-left:10px">Osoba</th><th>Zostało</th><th>Pula</th>${Object.values(T).map(t=>`<th>${t[0]}</th>`).join("")}</tr>`;
+for(const p of P){const c={};let used=0;for(const[k,t]of Object.entries(S.a[p]||{})){const[yy,m,d]=k.split("-").map(Number);if(yy!=y||off(yy,m-1,d))continue;c[t]=(c[t]||0)+1;if(t=="u"||t=="z")used++}
+const lk=p+"_"+y,first=y==ys[0],lim=first?(S.lim[lk]??({Patrycja:20}[p]||0)):26+(CF[p]||0);CF[p]=lim-used;sh+=`<tr><td>${p}</td><td class="${lim-used<0?"warn":""}" style="font-weight:700;font-size:14px">${lim-used}</td><td>${first?`<input class="lim" type="number" min="0" value="${lim}" data-l="${lk}">`:lim}</td>${Object.keys(T).map(t=>`<td>${c[t]||"–"}</td>`).join("")}</tr>`}
+out+=sh+"</table></div>"}
+$("#sumw").innerHTML=out;const ho=$("#hist details")&&$("#hist details").open;$("#hist").innerHTML=`<details ${ho?"open":""} style="margin-top:26px"><summary style="cursor:pointer;font-size:15px;font-weight:600;margin-bottom:6px">Historia zmian</summary>`+((S.log||[]).length?S.log.slice(0,30).map(l=>{const[y,m,d]=l.k.split("-");const dt=new Date(l.ts).toLocaleString("pl-PL",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});return `<div class="mu" style="padding:4px 0;border-bottom:1px solid var(--ln)"><b style="color:var(--fg)">${l.w}</b> ${l.t=="x"?"usunął(a)":"dodał(a) "+T[l.t][0]} · ${l.p==l.w?"":l.p+", "}${+d}.${m}.${y} · ${dt}</div>`}).join(""):`<div class="mu">Brak zmian.</div>`)+`</details>`}
+async function save(){const j=JSON.stringify(S);try{localStorage.setItem("urlopy",j)}catch(e){}if(doc){try{$("#st").textContent="Zapisywanie…";await Promise.race([doc.set({j}),new Promise((_,r)=>setTimeout(()=>r({code:"timeout – baza nie odpowiada"}),8000))]);$("#st").textContent="Wspólny plan – zapisano ✓"}catch(e){$("#st").textContent="⚠ Nie zapisano do wspólnej bazy ("+(e.code||e.message)+"). Zapis tylko w tej przeglądarce."}}}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-b]");if(b){brush=b.dataset.b;render();return}
+if(e.target.closest("[data-sv]")){save();return}const u=e.target.closest("[data-u]");if(u){ME=u.dataset.u;try{localStorage.setItem("urlopyUser",ME)}catch(x){}render();return}const c=e.target.closest("td.c");if(!c)return;if(!ME){alert("Najpierw wybierz u góry, kim jesteś.");return}const{p,k}=c.dataset;S.a[p]=S.a[p]||{};S.by=S.by||{};S.by[p]=S.by[p]||{};S.log=S.log||[];let nt;if(brush=="x"||S.a[p][k]==brush){delete S.a[p][k];delete S.by[p][k];nt="x"}else{S.a[p][k]=brush;S.by[p][k]=ME;nt=brush}S.log.unshift({w:ME,p,k,t:nt,ts:Date.now()});S.log=S.log.slice(0,100);render();save()});
+document.addEventListener("change",e=>{if(e.target.dataset.l){S.lim[e.target.dataset.l]=+e.target.value;render();save()}});
+$("#more").onclick=()=>{S.n++;render();save()};
+function load(j){try{const x=JSON.parse(j);S={a:x.a||{},n:Math.max(8,x.n||8),lim:x.lim||{},by:x.by||{},log:x.log||[]}}catch(e){}render()}
+async function boot(){try{const x=localStorage.getItem("urlopy");if(x)load(x)}catch(e){}render();
+try{const V="10.12.2",A=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`),F=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`),fdb=F.getFirestore(A.initializeApp(FIREBASE_CONFIG)),ref=F.doc(fdb,"plan","main");doc={set:o=>F.setDoc(ref,o)};F.onSnapshot(ref,s=>{const d=s.exists()&&s.data();if(d&&d.j&&!s.metadata.hasPendingWrites)load(d.j)},e=>{$("#st").textContent="⚠ Brak dostępu do bazy ("+(e.code||"")+")"});$("#st").textContent="Wspólny plan – zmiany widać u wszystkich";return}catch(e){FE=e.message||String(e)}
+$("#st").textContent="Tryb lokalny ("+FE+") – zmiany zapisują się tylko w tej przeglądarce"}
+$("#lock").style.display="none";$("#app").style.display="block";boot();
+</script></body></html>
