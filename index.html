@@ -28,6 +28,7 @@ td.c{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .sum{width:100%;margin-top:6px}.sum th,.sum td{min-width:0;height:34px;font-size:12px}.sum th:first-child,.sum td:first-child{position:static}
 input.lim{width:44px;border:1px solid var(--ln);border-radius:6px;background:var(--card);color:var(--fg);text-align:center;padding:3px}
 .pill{width:22px;height:22px;border-radius:6px;margin:auto}
+:root{--gr:#e4e3de}@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--gr:#2f2f2c}}.gr{background:var(--gr);border-color:var(--gr)}.gr.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
 </style></head><body>
 <div id="lock"><h1>Plan nieobecności</h1><div class="mu">Wpisz hasło</div>
 <input id="pw" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="hasło" style="color:#111;background:#fff;caret-color:#111" oninput=""><button id="go">Wejdź</button><div id="err" class="mu"></div><div id="cnt" style="font-size:22px;letter-spacing:4px;min-height:30px;margin-top:10px"></div><div id="kb" style="margin-top:10px"></div></div>
@@ -57,8 +58,8 @@ function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=
 const HC={};function hol(y){if(HC[y])return HC[y];const s=new Set();[[0,1],[0,6],[4,1],[4,3],[7,15],[10,1],[10,11],[11,24],[11,25],[11,26]].forEach(([m,d])=>s.add(key(y,m,d)));const e=easter(y);[0,1,49,60].forEach(o=>{const x=new Date(e);x.setDate(x.getDate()+o);s.add(key(x.getFullYear(),x.getMonth(),x.getDate()))});return HC[y]=s}
 const off=(y,m,d)=>{const w=new Date(y,m,d).getDay();return w==0||w==6||hol(y).has(key(y,m,d))};
 function render(){
-$("#who").innerHTML=`<span class="mu">Jesteś:</span> `+P.map(p=>`<button data-u="${p}" class="${ME==p?"on":""}" style="margin:0 4px 4px 0">${p}</button>`).join("")+`<button data-sv style="margin-left:8px;border-color:#7fb88f">Zapisz</button>`+(ME?"":`<div class="warn" style="font-size:12px">Wybierz, kim jesteś, żeby wpisywać nieobecności.</div>`);
-$("#bar").innerHTML=Object.entries(T).map(([k,[n,c]])=>`<button data-b="${k}" class="${brush==k?"on":""}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")+`<span style="margin-left:auto;display:flex;gap:6px"><button data-undo>↶ Cofnij</button><button data-b="x" class="${brush=="x"?"on":""}">Usuń</button></span>`;
+$("#who").innerHTML=`<span class="mu">Jesteś:</span> `+P.map(p=>`<button data-u="${p}" class="${ME==p?"on":""}" style="margin:0 4px 4px 0">${p}</button>`).join("")+`<button data-sv class="gr" style="margin-left:8px">Zapisz</button>`+(ME?"":`<div class="warn" style="font-size:12px">Wybierz, kim jesteś, żeby wpisywać nieobecności.</div>`);
+$("#bar").innerHTML=Object.entries(T).map(([k,[n,c]])=>`<button data-b="${k}" class="${brush==k?"on":""}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")+`<span style="margin-left:auto;display:flex;gap:6px"><button data-undo class="gr">↶ Cofnij</button><button data-b="x" class="gr ${brush=="x"?"on":""}">Usuń</button></span>`;
 let h="";const today=new Date();
 for(let i=HID;i<S.m;i++){const dt=new Date(START.getFullYear(),START.getMonth()+i,1),y=dt.getFullYear(),m=dt.getMonth(),dim=new Date(y,m+1,0).getDate();
 const dn=["Nd","Pn","Wt","Śr","Cz","Pt","So"];let th="<th></th>",cnt="";
